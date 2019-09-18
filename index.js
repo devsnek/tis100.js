@@ -2,6 +2,9 @@
 
 /* eslint-disable prefer-destructuring */
 
+// A lot of this logic is inspired by
+// https://github.com/eviltrout/tis-100/
+
 function split(s, c) {
   const index = s.indexOf(c);
   if (index === -1) {
