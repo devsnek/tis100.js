@@ -1,10 +1,9 @@
 'use strict';
 
+const { table } = require('table');
 const { TIS, Node, StackMemoryNode } = require('.');
 
 const left = new Node(`
-# generate a stream of numbers
-
 ADD 1
 MOV ACC, RIGHT
 `.trim());
@@ -12,17 +11,15 @@ MOV ACC, RIGHT
 const right = new Node(`
 START:
   MOV LEFT, ACC
-  SAV             # save number to BAK
-
-CHECK:            # sub 2 until ACC is 0 or -1
+  SAV
+CHECK:
   SUB 2
-  JLZ START       # -1 means its odd
-  JEZ EVEN        # 0 means its even
+  JLZ START
+  JEZ EVEN
   JMP CHECK
-
 EVEN:
-  SWP             # load BAK to ACC
-  MOV ACC, DOWN   # send ACC to stack
+  SWP
+  MOV ACC, DOWN
 `.trim());
 
 const stack = new StackMemoryNode();
@@ -31,6 +28,25 @@ const tis = new TIS([
   [left, right],
   [null, stack],
 ]);
+
+const DISABLED_NODE = ` Disabled Node        X
+                    X
+                   X
+                  X
+                X
+               X
+              X
+             X
+           X
+          X
+         X
+        X
+      X
+     X
+    X
+  X
+ X
+X`;
 
 let steps = 0;
 
@@ -48,38 +64,43 @@ setInterval(() => {
 
   steps += 1;
 
-  console.clear();
-  console.log(`Step #${steps}`);
-  tis.grid.forEach((row) => {
-    row.forEach((node) => {
+  const options = {
+    columns: {},
+  };
+  const cells = tis.grid.map((row) =>
+    row.map((node, column) => {
+      options.columns[column] = { width: 23 };
       if (node === null) {
-        return;
+        return DISABLED_NODE;
       }
-      let width = 0;
       const lines = [
-        ` ${node.constructor.name} (${node.x}, ${node.y}) ACC:${node.ACC} BAK:${node.BAK} ${node.blocked ? 'Blocked' : ''}`,
+        node.name,
+        `ACC: ${node.ACC} | BAK: ${node.BAK}${node.blocked ? ' | BL' : ''}`,
         '',
       ];
       if (node.stack) {
-        width = 20;
-        node.stack.forEach((n) => {
-          lines.push(`${n}`);
-        });
-      } else {
-        node.source.split('\n').forEach((l, i) => {
-          width = Math.max(l.length + 2, width);
-          if (i === node.line) {
-            lines.push(`> ${l}`);
+        node.stack.forEach((item, i) => {
+          if (i === node.stack.length - 1) {
+            lines.push(`> ${item}`);
           } else {
-            lines.push(`  ${l}`);
+            lines.push(`  ${item}`);
           }
         });
+      } else {
+        node.source
+          .split('\n')
+          .forEach((l, i) => {
+            if (i === node.line) {
+              lines.push(`> ${l}`);
+            } else {
+              lines.push(`  ${l}`);
+            }
+          });
       }
-      const bar = '-'.repeat(width);
-      lines.unshift(bar);
-      lines.push(bar);
-      console.log(lines.join('\n'));
-      console.log();
-    });
-  });
-}, 15);
+      return Object.assign(Array.from({ length: 17 }), lines).join('\n');
+    }));
+
+  console.clear();
+  console.log(`TIS-100 (JavaScript) Step #${steps}`);
+  console.log(table(cells, options));
+}, 45);

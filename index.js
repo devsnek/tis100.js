@@ -100,7 +100,7 @@ function parse(source) {
     const [instruction, args, lineIndex] = line;
     if (INSTRUCTIONS[instruction][0] === 'LABEL') {
       if (!labels.has(args[0])) {
-        throw new SyntaxError(`Unknown labelL ${args[0]}`);
+        throw new SyntaxError(`Unknown label ${args[0]}`);
       }
       return [instruction, [labels.get(args[0])], lineIndex];
     }
@@ -110,6 +110,8 @@ function parse(source) {
 
 class Node {
   constructor(source) {
+    this.name = 'Basic Execution Node';
+
     this.source = source;
     this.instructions = parse(source);
 
@@ -363,11 +365,11 @@ class Node {
   }
 }
 
-const STACK_MAX = 10;
+const STACK_MAX = 15;
 class StackMemoryNode extends Node {
   constructor() {
-    super('# STACK MEMORY NODE');
-
+    super('');
+    this.name = 'Stack Memory Node';
     this.stack = [];
   }
 
