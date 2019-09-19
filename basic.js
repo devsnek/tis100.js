@@ -10,16 +10,18 @@ MOV ACC, RIGHT
 
 const right = new Node(`
 START:
-  MOV LEFT, ACC
-  SAV
+ MOV LEFT, ACC
+ SAV
+
 CHECK:
-  SUB 2
-  JLZ START
-  JEZ EVEN
-  JMP CHECK
+ SUB 2
+ JLZ START
+ JEZ EVEN
+ JMP CHECK
+
 EVEN:
-  SWP
-  MOV ACC, DOWN
+ SWP
+ MOV ACC, DOWN
 `.trim());
 
 const stack = new StackMemoryNode();
@@ -29,18 +31,18 @@ const tis = new TIS([
   [null, stack],
 ]);
 
-const DISABLED_NODE = ` Disabled Node        X
+const DISABLED_NODE = ` Disabled Node       X
                     X
                    X
-                  X
+                 X
                 X
                X
               X
-             X
+            X
            X
           X
          X
-        X
+       X
       X
      X
     X
@@ -69,7 +71,7 @@ setInterval(() => {
   };
   const cells = tis.grid.map((row) =>
     row.map((node, column) => {
-      options.columns[column] = { width: 23 };
+      options.columns[column] = { width: 22 };
       if (node === null) {
         return DISABLED_NODE;
       }

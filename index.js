@@ -44,6 +44,12 @@ function parse(source) {
   const labels = new Map();
 
   source.split('\n').forEach((raw, lineIndex) => {
+    if (lineIndex > 14) {
+      throw new SyntaxError('Only 15 lines may be specified');
+    }
+    if (raw.length > 20) {
+      throw new SyntaxError('Only 20 characters per line');
+    }
     const line = raw.trim().split('#')[0];
     if (line.length === 0) {
       return;
